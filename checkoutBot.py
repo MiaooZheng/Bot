@@ -15,7 +15,7 @@ product_url = 'https://www.birkenstock.com/ca/boston-suede-leather/boston-suede-
 
 
 class CheckoutBot:
-    def __init__(self, path, color = 'Taupe'):
+    def __init__(self, path, color = 'Taupe', width = 'Wide'):
         self.options = Options()
         self.options.add_experimental_option("excludeSwitches", ["disable-popup-blocking"])
         self.options.add_argument("--disable-popup-blocking")
@@ -28,7 +28,7 @@ class CheckoutBot:
         # self.driver.switch_to.alert.dismiss()
         self.driver.maximize_window()
         self.color = color
-
+        self.width = width
 
     def search_product(self): # here i have specific item
         self.driver.get("https://www.birkenstock.com/ca/boston-suede-leather/boston-suede-suedeleather-softfootbed-eva-u_46.html?dwvar_boston-suede-suedeleather-softfootbed-eva-u__46_width=N")
@@ -51,13 +51,28 @@ class CheckoutBot:
                 color_id = colors[color] 
         print(color_id)
 
-        WebDriverWait(self.driver, 40).until(EC.element_to_be_clickable((By.XPATH, f"//img[@class='variant-image' and contains(@src, {color_id})]")))
-        self.choose_color = self.driver.find_element(By.XPATH, f"//img[@class='variant-image' and contains(@src, {color_id})]")
-        self.choose_color.click()
-        
-        # now check width of shoes
-        # //span[.='Regular/Wide']
+        try:
+            WebDriverWait(self.driver, 40).until(EC.element_to_be_clickable((By.XPATH, f"//img[@class='variant-image' and contains(@src, {color_id})]")))
+            self.choose_color = self.driver.find_element(By.XPATH, f"//img[@class='variant-image' and contains(@src, {color_id})]")
+            self.choose_color.click()
+        except:
+            print("not clickable")
 
+        # now check width of shoes
+
+        widths = {'Wide': 'Regular/Wide', "Narrow": 'Medium/Narrow'}
+        for width in widths:
+            if width == self.width:
+                width_code = widths[width]
+        print(width_code)
+
+        try:
+            WebDriverWait(self.driver, 40).until(EC.element_to_be_clickable((By.XPATH, f"//*[@class='swatchanchor width-type width' and contains(@data-value, {width_code})]")))
+            self.choose_width = self.driver.find_element(By.XPATH, f"//*[@class='swatchanchor width-type width' and contains(@data-value, {width_code}) and contains(@aria-label, 'Width {width_code}')]")
+            self.choose_width.click()
+        except:
+            print("not clickable, there's an error when choose width of shoes!")
+        
 
 
 
@@ -85,7 +100,7 @@ class CheckoutBot:
 
         
 ####### when color is Mink, there's an error need to be fixed 
-client = CheckoutBot(path = "/Users/miaoz/Desktop/github_projects/bot/chromedriver_mac64/chromedriver", color = 'Mocha')
+client = CheckoutBot(path = "/Users/miaoz/Desktop/github_projects/bot/chromedriver_mac64/chromedriver", color = 'Taupe', width= 'Width')
 client.search_product()
 
 
