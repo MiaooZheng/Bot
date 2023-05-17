@@ -133,8 +133,6 @@ class CheckoutBot:
         # username.send_keys("zhengmiao0810@gmail.com")
 
         
-
-## test
         
 ####### when color is Mink, there's an error need to be fixed 
 client = CheckoutBot(path = "/Users/miaoz/Desktop/github_projects/bot/chromedriver_mac64/chromedriver", color = 'Black', width= 'Wide', size = '40')
