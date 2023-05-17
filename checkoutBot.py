@@ -15,7 +15,7 @@ product_url = 'https://www.birkenstock.com/ca/boston-suede-leather/boston-suede-
 
 
 class CheckoutBot:
-    def __init__(self, path, color = 'Taupe', width = 'Wide'):
+    def __init__(self, path, color = 'Taupe', width = 'Wide', size = '40'):
         self.options = Options()
         self.options.add_experimental_option("excludeSwitches", ["disable-popup-blocking"])
         self.options.add_argument("--disable-popup-blocking")
@@ -29,8 +29,9 @@ class CheckoutBot:
         self.driver.maximize_window()
         self.color = color
         self.width = width
+        self.size = size
 
-    def search_product(self): # here i have specific item
+    def search_product_and_add_to_cart(self): # here i have specific item
         self.driver.get("https://www.birkenstock.com/ca/boston-suede-leather/boston-suede-suedeleather-softfootbed-eva-u_46.html?dwvar_boston-suede-suedeleather-softfootbed-eva-u__46_width=N")
         time.sleep(8)
         
@@ -72,7 +73,34 @@ class CheckoutBot:
             self.choose_width.click()
         except:
             print("not clickable, there's an error when choose width of shoes!")
+
+
+        # now choose size - if not available, send notificaion - here i wanna size 40. not available
+        # if available, use xpath: //*[@class="swatchanchor " and contains(@data-size, "41")] 
+        size = self.size 
         
+        try:
+            WebDriverWait(self.driver, 40).until(EC.element_to_be_clickable((By.XPATH, f'//*[@class="swatchanchor " and contains(@data-size, {size})]')))
+            self.choose_width = self.driver.find_element(By.XPATH, f'//*[@class="swatchanchor " and contains(@data-size, {size})]')
+            self.choose_width.click()
+        except:
+            print("Item may not be available at this time!")
+
+        # now we can add to cart
+        # //button[@id="add-to-cart"]
+
+        WebDriverWait(self.driver, 40).until(EC.element_to_be_clickable((By.XPATH, f'//button[@id="add-to-cart"]')))
+        self.add_to_cart = self.driver.find_element(By.XPATH, f'//button[@id="add-to-cart"]')
+        self.add_to_cart.click()
+
+    def view_cart_and_checkout(self):
+        # //button[@id="add-to-cart"]
+        WebDriverWait(self.driver, 40).until(EC.element_to_be_clickable((By.XPATH, f'//button[@id="add-to-cart"]')))
+        self.add_to_cart = self.driver.find_element(By.XPATH, f'//button[@id="add-to-cart"]')
+        self.add_to_cart.click()
+        
+
+
 
 
 
@@ -100,8 +128,12 @@ class CheckoutBot:
 
         
 ####### when color is Mink, there's an error need to be fixed 
-client = CheckoutBot(path = "/Users/miaoz/Desktop/github_projects/bot/chromedriver_mac64/chromedriver", color = 'Taupe', width= 'Wide')
-client.search_product()
+client = CheckoutBot(path = "/Users/miaoz/Desktop/github_projects/bot/chromedriver_mac64/chromedriver", color = 'Black', width= 'Wide', size = '40')
+client.search_product_and_add_to_cart()
+if client.search_product_and_add_to_cart():
+    client.view_cart_and_checkout()
+else:
+    print("item not available at this moment.")
 
 
 
