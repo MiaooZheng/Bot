@@ -61,12 +61,14 @@ class CheckoutBot:
 
         # now check width of shoes
 
+        time.sleep(5)
         widths = {'Wide': 'Regular/Wide', "Narrow": 'Medium/Narrow'}
         for width in widths:
             if width == self.width:
                 self.width_code = widths[width]
         print(self.width_code)
 
+        time.sleep(3)
         try:
             WebDriverWait(self.driver, 40).until(EC.element_to_be_clickable((By.XPATH, f"//*[@class='swatchanchor width-type width' and contains(@data-value, {self.width_code})]")))
             self.choose_width = self.driver.find_element(By.XPATH, f"//*[@class='swatchanchor width-type width' and contains(@data-value, {self.width_code}) and contains(@aria-label, 'Width {self.width_code}')]")
@@ -79,13 +81,14 @@ class CheckoutBot:
         # if available, use xpath: //*[@class="swatchanchor " and contains(@data-size, "41")] 
         size = self.size 
         
+        time.sleep(4)
+
         try:
             WebDriverWait(self.driver, 40).until(EC.element_to_be_clickable((By.XPATH, f'//*[@class="swatchanchor " and contains(@data-size, {size})]')))
             self.choose_width = self.driver.find_element(By.XPATH, f'//*[@class="swatchanchor " and contains(@data-size, {size})]')
             self.choose_width.click()
         except:
             print("Item may not be available at this time!")
-
         # now we can add to cart
         # //button[@id="add-to-cart"]
 
@@ -97,6 +100,13 @@ class CheckoutBot:
         # //button[@id="add-to-cart"]
         WebDriverWait(self.driver, 40).until(EC.element_to_be_clickable((By.XPATH, f'//button[@id="add-to-cart"]')))
         self.add_to_cart = self.driver.find_element(By.XPATH, f'//button[@id="add-to-cart"]')
+        self.add_to_cart.click()
+
+        time.sleep(3)
+        # then go to cart 
+        # //*[@class='button cart-link']
+        WebDriverWait(self.driver, 30).until(EC.element_to_be_clickable((By.XPATH, f"//*[@class='button cart-link']")))
+        self.add_to_cart = self.driver.find_element(By.XPATH, f"//*[@class='button cart-link']")
         self.add_to_cart.click()
         
 
