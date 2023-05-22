@@ -97,17 +97,36 @@ class CheckoutBot:
     def add_to_cart_and_checkout(self):
         # //button[@id="add-to-cart"]
         time.sleep(3)
+
         WebDriverWait(self.driver, 40).until(EC.element_to_be_clickable((By.XPATH, f'//button[@id="add-to-cart"]')))
         self.add_to_cart = self.driver.find_element(By.XPATH, f'//button[@id="add-to-cart"]')
-        self.add_to_cart.click()
+        self.driver.execute_script("arguments[0].click();", self.add_to_cart)
+        # self.add_to_cart.click()
+        print("add to cart click")
 
         time.sleep(3)
         # then go to cart 
         # //*[@class='button cart-link']
-        WebDriverWait(self.driver, 30).until(EC.element_to_be_clickable((By.XPATH, f"//*[@class='button cart-link']")))
-        self.add_to_cart = self.driver.find_element(By.XPATH, f"//*[@class='button cart-link']")
-        self.add_to_cart.click()
+        WebDriverWait(self.driver, 30).until(EC.element_to_be_clickable((By.XPATH, f"//div[@class='overlay-actions']//a[@class='button cart-link']")))
+        self.add_to_cart2= self.driver.find_element(By.XPATH, f"//div[@class='overlay-actions']//a[@class='button cart-link']")
+        self.driver.execute_script("arguments[0].click();", self.add_to_cart2)
+        # self.add_to_cart2.click()
+        print("add to cart successfully!")
+
+        time.sleep(3)
+        # proceed to checkout
+        # <button class="button button-large xlt-continueCheckout" type="submit" value="Proceed to checkout" name="dwfrm_cart_checkoutCart">
+        # //button[@class='button button-large xlt-continueCheckout']
+
+        WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.XPATH, f"//button[@class='button button-large xlt-continueCheckout']")))
+        self.checkout= self.driver.find_element(By.XPATH, f"//button[@class='button button-large xlt-continueCheckout']")
+        self.driver.execute_script("arguments[0].click();", self.checkout)
+        print("let's do checkout")
         
+
+        #### add your info for checkout
+        ### coz the price is high, i dont want to do the auto purchasing at this momemnt 
+        ### more codes coming! And i'll add my shipping info to place an order later! :D
 
 
 
@@ -137,6 +156,7 @@ class CheckoutBot:
 ####### when color is Mink, there's an error need to be fixed 
 client = CheckoutBot(path = "/Users/miaoz/Desktop/github_projects/bot/chromedriver_mac64/chromedriver", color = 'Black', width= 'Wide', size = '40')
 client.search_product()
+print("next step, add to cart:)")
 client.add_to_cart_and_checkout()
 
 
