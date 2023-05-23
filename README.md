@@ -4,7 +4,7 @@
 
 ** Update on May23,2023
 - I'm thinking to do automation to check availability and if yes, send text message. However, I encountered some issues:
-- email to text_message file done. It works for US ATT and Canada Bell and Telus. However, I'm using fido as mobile carrier, which is not free at this time. So may not be able to send text to my own phone no. when it has stock. 
+>> email to text_message file done. It works for US ATT and Canada Bell and Telus. However, I'm using fido as mobile carrier, which is not free at this time. So may not be able to send text to my own phone no. when it has stock. 
 
 Plan for next step: 
 - Since my friend told me there maybe delays from store email. I may still want to send email to my email address if i find it's in stock. 
