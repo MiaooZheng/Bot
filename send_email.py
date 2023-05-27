@@ -38,3 +38,5 @@ email_alert(email_from = email_from, password= app_password, subject = 'Hey!', b
 
 # i'm using fido account - then try phone_number+mms.fido.ca - unfortunately, it's not working for python
 # you can find your carrier info here if you live in Canada https://www.techwyse.com/blog/online-innovation/send-sms-through-email-to-usa-and-canada/
+
+

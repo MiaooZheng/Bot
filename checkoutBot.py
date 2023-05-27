@@ -6,7 +6,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.chrome.options import Options
 import time
-
+import sys
+import os
 
 # for this project, i'm going to check the availability and buy the shoes on birkenstock website
 
@@ -17,6 +18,8 @@ product_url = 'https://www.birkenstock.com/ca/boston-suede-leather/boston-suede-
 class CheckoutBot:
     def __init__(self, path, color = 'Taupe', width = 'Wide', size = '40'):
         self.options = Options()
+        self.options.add_experimental_option("useAutomationExtension", False)
+        self.options.add_experimental_option("excludeSwitches",["enable-automation"])
         self.options.add_experimental_option("excludeSwitches", ["disable-popup-blocking"])
         self.options.add_argument("--disable-popup-blocking")
         self.options.add_argument('--profile-directory=Default') 
@@ -31,7 +34,7 @@ class CheckoutBot:
         self.width = width
         self.size = size
 
-    def search_product(self): # here i have specific item
+    def search_product(self, try_again = True): # here i have specific item
         from selenium.common.exceptions import NoSuchElementException
         from selenium.common.exceptions import StaleElementReferenceException
 
@@ -46,7 +49,7 @@ class CheckoutBot:
         self.close_ads.click()
         
         # then choose color of shoes 
-        # actually i want to buy this one - but i'll test the second one
+        # actually i want to buy Taupe - but i'll test the second one
 
         colors = {'Taupe': '560771', "Mocha": '660461', "Mink": '1009543', "Black": '660473'}
 
@@ -91,7 +94,14 @@ class CheckoutBot:
             self.choose_width = self.driver.find_element(By.XPATH, f'//*[@class="swatchanchor " and contains(@data-size, {size})]')
             self.choose_width.click()
         except:
-            print("Item may not be available at this time!")
+            if try_again:
+                try:
+                    WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.XPATH, f'//*[@class="swatchanchor " and contains(@data-size, {size})]')))
+                    self.choose_width = self.driver.find_element(By.XPATH, f'//*[@class="swatchanchor " and contains(@data-size, {size})]')
+                    self.choose_width.click()
+                except:
+                    print("Item may not be available at this time!")
+                    sys.exit(1)
 
 
     def add_to_cart_and_checkout(self):
@@ -107,22 +117,13 @@ class CheckoutBot:
         time.sleep(3)
         # then go to cart 
         # //*[@class='button cart-link']
-        WebDriverWait(self.driver, 30).until(EC.element_to_be_clickable((By.XPATH, f"//div[@class='overlay-actions']//a[@class='button cart-link']")))
+        WebDriverWait(self.driver, 50).until(EC.element_to_be_clickable((By.XPATH, f"//div[@class='overlay-actions']//a[@class='button cart-link']")))
         self.add_to_cart2= self.driver.find_element(By.XPATH, f"//div[@class='overlay-actions']//a[@class='button cart-link']")
         self.driver.execute_script("arguments[0].click();", self.add_to_cart2)
         # self.add_to_cart2.click()
         print("add to cart successfully!")
 
         time.sleep(3)
-        # proceed to checkout
-        # <button class="button button-large xlt-continueCheckout" type="submit" value="Proceed to checkout" name="dwfrm_cart_checkoutCart">
-        # //button[@class='button button-large xlt-continueCheckout']
-
-        WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.XPATH, f"//button[@class='button button-large xlt-continueCheckout']")))
-        self.checkout= self.driver.find_element(By.XPATH, f"//button[@class='button button-large xlt-continueCheckout']")
-        self.driver.execute_script("arguments[0].click();", self.checkout)
-        print("let's do checkout")
-        
 
         #### add your info for checkout
         ### coz the price is high, i dont want to do the auto purchasing at this momemnt 
@@ -131,33 +132,106 @@ class CheckoutBot:
 
 
 
-
-
     def login(self):
-        from selenium.webdriver.common.action_chains import ActionChains
-        # //*[@id="wrapper"]/div[1]/header[1]/div[1]/div[3]/ul/li[2]/a/i
+        # after adding to cart, click checkout with account
+        # //input[@id='cart-guestcheckout-false']
+
+        WebDriverWait(self.driver, 40).until(EC.element_to_be_clickable((By.XPATH, f"//label[@class='label' and @for='cart-guestcheckout-false']")))
+        self.login = self.driver.find_element(By.XPATH, f"//label[@class='label' and @for='cart-guestcheckout-false']")
+        self.driver.execute_script("arguments[0].click();", self.login)
+        print("login with acct")
+
+        # enter email
+        self.driver.implicitly_wait(5)
+        WebDriverWait(self.driver, 40).until(EC.presence_of_element_located((By.XPATH, f"*//form[contains(@class, 'guestcheckout')]//fieldset//div[contains(@class, 'username')]//input[contains(@class, 'email')]")))
+        print("maybe work")
+        self.enter_email = self.driver.find_element(By.XPATH, f"*//form[contains(@class, 'guestcheckout')]//fieldset//div[contains(@class, 'username')]//input[contains(@class, 'email')]")
+        print("find it!")
+        self.driver.execute_script("arguments[0].click();", self.enter_email)
+        self.enter_email.click()
+        self.enter_email.send_keys(f"{email}")
+
+        # enter password
+        WebDriverWait(self.driver, 40).until(EC.presence_of_element_located((By.XPATH, f"*//form[contains(@class, 'guestcheckout')]//fieldset//div[contains(@class, 'password')]//input[contains(@class, 'password')]")))
+        print("maybe work")
+        self.enter_email = self.driver.find_element(By.XPATH, f"*//form[contains(@class, 'guestcheckout')]//fieldset//div[contains(@class, 'password')]//input[contains(@class, 'password')]")
+        print("find it!")
+        self.driver.execute_script("arguments[0].click();", self.enter_email)
+        self.enter_email.click()
+        self.enter_email.send_keys(f"{password}")
+
+        # proceed to checkout
+        # <button class="button button-large xlt-continueCheckout" type="submit" value="Proceed to checkout" name="dwfrm_cart_checkoutCart">
+        # //button[@class='button button-large xlt-continueCheckout']
+
+        WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.XPATH, f"//button[@class='button button-large xlt-continueCheckout']")))
+        self.checkout= self.driver.find_element(By.XPATH, f"//button[@class='button button-large xlt-continueCheckout']")
+        self.driver.execute_script("arguments[0].click();", self.checkout)
+        print("let's do checkout")
+
+    def login_directly(self):
+        # https://www.birkenstock.com/ca/login
         self.driver.get("https://www.birkenstock.com/ca/login")
-        wait = WebDriverWait(self.driver, 10)
+        time.sleep(8)
 
-        try:
-            time.sleep(15)
-            wait.until(EC.element_to_be_clickable((By.XPATH, '/html/body/div[2]/div/main/div/div/div/button')))
-            element = self.driver.find_element(By.CSS_SELECTOR, '/html/body/div[2]/div/main/div/div/div/button').click()
-            ActionChains(self.driver).move_to_element(element).perform() # I assume br is your webdriver
-            element.click()
-        except:
-            print("could not click")
+         # remove ads first 
+        WebDriverWait(self.driver, 60).until(EC.frame_to_be_available_and_switch_to_it((By.XPATH,'//iframe[@id="attentive_creative"]')))
+        WebDriverWait(self.driver, 40).until(EC.element_to_be_clickable((By.XPATH, "//div[@id='page1']//button[@id='closeIconContainer']")))
 
-        # username = self.driver.find_element(By.XPATH, '//*[@id="dwfrm_login_username_d0gprxzxjoqn"]')
-        # username.send_keys("zhengmiao0810@gmail.com")
+        self.close_ads = self.driver.find_element(By.XPATH, "//div[@id='page1']//button[@id='closeIconContainer']")
+        self.close_ads.click()
 
-        
-        
+        # check login_button
+        # //*[@id="dwfrm_login_username_d0cfuetszctr"]
+        # //div[@class='form-row username required form-row-input']//input[@class='input-text input-email email required filled-out' and @aria-label='Your email address and @id='dwfrm_login_username_d0cfuetszctr']
+        self.driver.implicitly_wait(5)
+        self.driver.switch_to.default_content()  # This method is used to come out of all the frames and switch the focus at the page. Once we move out, it loses the access to the elements inside the frames in the page.
+        # *//input[@class='input-text input-email email required filled-out' and @aria-label='Your email address']
+        WebDriverWait(self.driver, 40).until(EC.presence_of_element_located((By.XPATH, f"*//form[@class='clearfix']//fieldset//div[contains(@class, 'username')]//input[contains(@class, 'email')]")))
+        print("maybe work")
+        self.enter_email = self.driver.find_element(By.XPATH, f"*//form[@class='clearfix']//fieldset//div[contains(@class, 'username')]//input[contains(@class, 'email')]")
+        print("find it!")
+        self.driver.execute_script("arguments[0].click();", self.enter_email)
+        self.enter_email.click()
+        self.enter_email.send_keys(f"{email}")
+
+        # enter password
+        WebDriverWait(self.driver, 40).until(EC.presence_of_element_located((By.XPATH, f"*//form[@class='clearfix']//fieldset//div[contains(@class, 'password')]//input[contains(@class, 'password')]")))
+        print("maybe work")
+        self.enter_email = self.driver.find_element(By.XPATH, f"*//form[@class='clearfix']//fieldset//div[contains(@class, 'password')]//input[contains(@class, 'password')]")
+        print("find it!")
+        self.driver.execute_script("arguments[0].click();", self.enter_email)
+        self.enter_email.click()
+        self.enter_email.send_keys(f"{password}")
+
+        # proceed to checkout
+        # <button class="button button-large xlt-continueCheckout" type="submit" value="Proceed to checkout" name="dwfrm_cart_checkoutCart">
+        # //button[@class='button button-large xlt-continueCheckout']
+
+
+        ########### need to fix
+        '''
+        WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.XPATH, f"//button[@class='button button-large xlt-continueCheckout']")))
+        self.checkout= self.driver.find_element(By.XPATH, f"//button[@class='button button-large xlt-continueCheckout']")
+        self.driver.execute_script("arguments[0].click();", self.checkout)
+        print("let's do checkout")
+        '''
+
+       
 ####### when color is Mink, there's an error need to be fixed 
+
+email = os.getenv("email")
+password = os.getenv("password")
+
 client = CheckoutBot(path = "/Users/miaoz/Desktop/github_projects/bot/chromedriver_mac64/chromedriver", color = 'Black', width= 'Wide', size = '40')
-client.search_product()
+
+client.search_product(try_again = True)
 print("next step, add to cart:)")
 client.add_to_cart_and_checkout()
+time.sleep(5)
+client.login()
+
+# client.login_directly()
 
 
 
