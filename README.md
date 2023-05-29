@@ -12,6 +12,7 @@ The next step:
 
 Other steps/ideas may keep coming.. (But probably that's all for this project💁
 
+------------------------------------
 
 ** Update on May23,2023
 - I'm thinking to do automation to check availability and if yes, send text message. However, I encountered some issues:
@@ -25,5 +26,5 @@ Plan for next step:
 --------------------
 Current plan: 
 - finish the rest of code, choose size, add to cart and checkout. (done)
-- connect to email and when I receive notification from store, run the above code immediately. 
-- use airflow to automatically check availability per 30mins and buy if available. 
+- connect to email and when I receive notification from store, run the above code immediately. or
+- use airflow to automatically check availability per hour and send email to me and i can buy it manually. (avoid multiple purchase for the same item).
