@@ -10,6 +10,7 @@ import sys
 import os
 
 # for this project, i'm going to check the availability and buy the shoes on birkenstock website
+# all steps work now. If you have an account, probably you'll have your shipping address already, then i just stop at the payment method step.
 
 product_url = 'https://www.birkenstock.com/ca/boston-suede-leather/boston-suede-suedeleather-softfootbed-eva-u_46.html?dwvar_boston-suede-suedeleather-softfootbed-eva-u__46_width=N'
 
@@ -35,8 +36,6 @@ class CheckoutBot:
         self.size = size
 
     def search_product(self, try_again = True): # here i have specific item
-        from selenium.common.exceptions import NoSuchElementException
-        from selenium.common.exceptions import StaleElementReferenceException
 
         self.driver.get("https://www.birkenstock.com/ca/boston-suede-leather/boston-suede-suedeleather-softfootbed-eva-u_46.html?dwvar_boston-suede-suedeleather-softfootbed-eva-u__46_width=N")
         time.sleep(8)
@@ -130,8 +129,6 @@ class CheckoutBot:
         ### more codes coming! And i'll add my shipping info to place an order later! :D
 
 
-
-
     def login(self):
         # after adding to cart, click checkout with account
         # //input[@id='cart-guestcheckout-false']
@@ -209,20 +206,21 @@ class CheckoutBot:
         # //button[@class='button button-large xlt-continueCheckout']
 
 
-        ########### need to fix
-        '''
+        # proceed to checkout
+
         WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.XPATH, f"//button[@class='button button-large xlt-continueCheckout']")))
-        self.checkout= self.driver.find_element(By.XPATH, f"//button[@class='button button-large xlt-continueCheckout']")
+        self.checkout= self.driver.find_element(By.XPATH, f"//button[contains(@class, 'continueCheckout']")
         self.driver.execute_script("arguments[0].click();", self.checkout)
+        self.checkout.click()
         print("let's do checkout")
-        '''
+
 
        
 ####### when color is Mink, there's an error need to be fixed 
 
 email = os.getenv("email")
 password = os.getenv("password")
-
+print(email)
 client = CheckoutBot(path = "/Users/miaoz/Desktop/github_projects/bot/chromedriver_mac64/chromedriver", color = 'Black', width= 'Wide', size = '40')
 
 client.search_product(try_again = True)
@@ -233,9 +231,3 @@ client.login()
 
 # client.login_directly()
 
-
-
-# https://www.birkenstock.com/ca/boston-suede-leather/boston-suede-suedeleather-softfootbed-eva-u_46.html?dwvar_boston-suede-suedeleather-softfootbed-eva-u__46_width=N
-
-
-# notes: when color is Mink, there's an error. Other colors working
