@@ -5,7 +5,7 @@
 ** Update on May29,2023**
 - As my item is available and I have already purchased it. I just stopped at the step of adding payment method. (coz this item is not $20, i don't want to pay and do a return. But the codes for the add payment info are very similar as before. :) )
 
-Now I have done the automation of searching product and proceeding to checkout and also sending email. 
+Now I have done the automation/web scraping of searching product and proceeding to checkout and also sending email. 
 
 The next step:
 - I'll use airflow to do a toy project. - check website per hour, if item available, send email/sms. (Notes: if you're using fido/rogers in Canada, you need to subscribe this service ($5/month :(()
