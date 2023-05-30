@@ -15,16 +15,15 @@ def email_alert(email_from, password, subject, body, to):
     server = smtplib.SMTP_SSL("smtp.gmail.com", 465) # port 587 if EmailMessage()
     # server.starttls()
     server.login(email_from, password)
-
     print("login successfully!")
 
     text = msg.as_string()
     server.sendmail(email_from, to, text)
-
     server.quit()
-
     print("send email successfully!")
 
+
+#### test
 email_from = os.getenv("email")
 app_password = os.getenv("app_password")   
 sender = os.getenv("sender_email")
