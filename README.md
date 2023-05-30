@@ -10,6 +10,7 @@ Now I have done the automation/web scraping of searching product and proceeding 
 The next step:
 - I'll use airflow to do a toy project. - check website per hour, if item available, send email/sms. (Notes: if you're using fido/rogers in Canada, you need to subscribe this service ($5/month :(()
 - If you reply yes to me via SMS, I'll process the checkout steps. (search product, choose size/color, proceed to checkouty,etc.) 
+- If you reply no, the dag will end here and you can buy it manually. 
 
 Other steps/ideas may keep coming.. (But probably that's all for this project💁
 
